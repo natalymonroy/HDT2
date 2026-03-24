@@ -18,13 +18,13 @@
 # Ambas funciones deben redondear a 2 decimales con round().
 
 def precio_con_descuento(precio_base, porcentaje):
-    # TODO
-    pass
+    descuento = precio_base * (porcentaje / 100)
+    return round(precio_base - descuento, 2)
 
 
 def precio_con_iva(precio, iva):
-    # TODO
-    pass
+    iva_amount = precio * (iva / 100)
+    return round(precio + iva_amount, 2)
 
 
 # --- Pruebas (NO modificar) ---
@@ -61,18 +61,29 @@ print(f"Q200 + 12% IVA = Q{precio_con_iva(200.0, 12)}")
 # DEBE usar las dos funciones anteriores internamente.
 
 def clasificar_duracion(minutos):
-    # TODO
-    pass
+    if minutos < 90:
+        return "corta"
+    elif minutos <= 150:
+        return "estándar"
+    else:
+        return "larga"
 
 
 def clasificar_rating(rating):
-    # TODO
-    pass
+    if rating < 4.0:
+        return "mala"
+    elif rating <= 6.9:
+        return "regular"
+    elif rating <= 8.4:
+        return "buena"
+    else:
+        return "excelente"
 
 
 def es_recomendada(duracion, rating):
-    # TODO: Usa clasificar_duracion y clasificar_rating
-    pass
+    duracion_clase = clasificar_duracion(duracion)
+    rating_clase = clasificar_rating(rating)
+    return (rating_clase in ["buena", "excelente"]) and (duracion_clase in ["estándar", "corta"])
 
 
 # --- Pruebas (NO modificar) ---
@@ -115,8 +126,17 @@ for titulo, dur, rat in peliculas:
 # SIN usar sum(), max(), min(), len(). Usa ciclos for para todo.
 
 def analizar_ventas(ventas):
-    # TODO: SIN sum(), max(), min(), len()
-    pass
+    total = 0
+    mejor_dia = 0
+    peor_dia = 0
+    for i in range(0, len(ventas)):
+        total = total + ventas[i]
+        if ventas[i] > ventas[mejor_dia]:
+            mejor_dia = i
+        if ventas[i] < ventas[peor_dia]:
+            peor_dia = i
+    promedio = round(total / len(ventas), 2)
+    return (total, promedio, mejor_dia, peor_dia)
 
 
 # --- Pruebas (NO modificar) ---
@@ -162,18 +182,24 @@ print(f"Peor día: {dias[peor]} ({semana_imax[peor]} entradas)")
 # El nombre debe ocupar 14 caracteres alineado a la izquierda.
 
 def formato_moneda(cantidad):
-    # TODO
-    pass
+    formatted = f"{cantidad:,.2f}"
+    return "Q" + formatted
 
 
 def barra_visual(valor, maximo, ancho=20):
-    # TODO
-    pass
+    proporcion = valor / maximo
+    llenos = round(proporcion * ancho)
+    vacios = ancho - llenos
+    barra = "█" * llenos + "░" * vacios
+    porcentaje = round(proporcion * 100)
+    return f"{barra} {porcentaje}%"
 
 
 def linea_reporte(nombre, valor, maximo, ancho=20):
-    # TODO: Usa formato_moneda y barra_visual
-    pass
+    nombre_formateado = f"{nombre:<14}"
+    moneda = formato_moneda(valor)
+    barra = barra_visual(valor, maximo, ancho)
+    return f"{nombre_formateado} | {moneda:>11} | {barra}"
 
 
 # --- Pruebas (NO modificar) ---
