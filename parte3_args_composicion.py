@@ -24,18 +24,33 @@
 #    (Ver formato en salida esperada)
 
 def ingreso_total(*montos):
-    # TODO: SIN sum()
-    pass
+    total = 0
+    for monto in montos:
+        total += monto
+    return total
 
 
 def mejor_sala(*salas):
-    # TODO: SIN max(). Cada sala es (nombre, ventas)
-    pass
+    if not salas:
+        return ("N/A", 0)
+    mejor = salas[0]
+    for sala in salas[1:]:
+        if sala[1] > mejor[1]:
+            mejor = sala
+    return mejor
 
 
 def reporte_multisala(titulo, *funciones):
-    # TODO: Cada función es (nombre, precio, vendidas, descuento)
-    pass
+    lineas = [f"=== {titulo} ==="]
+    total = 0
+    for i, func in enumerate(funciones, 1):
+        nombre, precio, vendidas, descuento = func
+        ingreso = precio * vendidas * (1 - descuento/100)
+        total += ingreso
+        lineas.append(f"Función {i}: {nombre:<15} | Q{ingreso:.2f}")
+    lineas.append("-")
+    lineas.append(f"TOTAL: Q{total:.2f}")
+    return "\n".join(lineas)
 
 
 # --- Pruebas (NO modificar) ---
@@ -92,8 +107,24 @@ print(reporte_multisala("Sala IMAX — Sábado",
 # Cada clave de **extras se muestra capitalizada.
 
 def ficha_pelicula(titulo, duracion, rating, **extras):
-    # TODO
-    pass
+    ancho = 35
+    lineas = ["┌" + "─" * (ancho - 2) + "┐"]
+    titulo_centrado = titulo.center(ancho - 2)
+    lineas.append("│" + titulo_centrado + "│")
+    lineas.append("├" + "─" * (ancho - 2) + "┤")
+    duracion_line = f"Duración : {duracion} min"
+    padding = " " * (ancho - 2 - len(duracion_line))
+    lineas.append("│ " + duracion_line + padding + "│")
+    rating_line = f"Rating   : ★ {rating}"
+    padding = " " * (ancho - 2 - len(rating_line))
+    lineas.append("│ " + rating_line + padding + "│")
+    for key, value in extras.items():
+        key_cap = key.capitalize()
+        content = f"{key_cap:<8} : {value}"
+        padding = " " * (ancho - 2 - len(content))
+        lineas.append("│ " + content + padding + "│")
+    lineas.append("└" + "─" * (ancho - 2) + "┘")
+    return "\n".join(lineas)
 
 
 # --- Pruebas (NO modificar) ---
@@ -148,23 +179,54 @@ print(ficha_pelicula("Inside Out 3", 105, 8.9))
 #    Para el promedio semanal de cada sala, divide total / 7.
 
 def calcular_totales(ventas_por_sala):
-    # TODO: Usa ingreso_total del ejercicio 3.1
-    pass
+    totales = []
+    for nombre_sala, ventas_lista in ventas_por_sala.items():
+        total = ingreso_total(*ventas_lista)
+        totales.append((nombre_sala, total))
+    return totales
 
 
 def ordenar_salas(lista_tuplas):
-    # TODO: Burbuja descendente. SIN sorted()/.sort()
-    pass
+    resultado = list(lista_tuplas)
+    n = len(resultado)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if resultado[j][1] < resultado[j + 1][1]:
+                resultado[j], resultado[j + 1] = resultado[j + 1], resultado[j]
+    return resultado
 
 
 def tendencia(valores):
-    # TODO
-    pass
+    if len(valores) <= 1:
+        return "ascendente"
+    es_ascendente = True
+    es_descendente = True
+    for i in range(1, len(valores)):
+        if valores[i] < valores[i - 1]:
+            es_ascendente = False
+        if valores[i] > valores[i - 1]:
+            es_descendente = False
+    if es_ascendente:
+        return "ascendente"
+    elif es_descendente:
+        return "descendente"
+    else:
+        return "irregular"
 
 
 def reporte_semanal(nombre_cine, ventas_por_sala):
-    # TODO: Usa todas las funciones anteriores
-    pass
+    totales = calcular_totales(ventas_por_sala)
+    ordenados = ordenar_salas(totales)
+    lineas = [f"=== REPORTE SEMANAL: {nombre_cine} ==="]
+    for i, (nombre, total) in enumerate(ordenados, 1):
+        ventas_lista = ventas_por_sala[nombre]
+        promedio = total / 7
+        tend = tendencia(ventas_lista)
+        lineas.append(f"#{i} {nombre:<10} | Total: {total:>4} | Prom: {promedio:>7.2f} | Tendencia: {tend}")
+    lineas.append("-")
+    mejor = mejor_sala(*[(n, t) for n, t in totales])
+    lineas.append(f"Mejor sala de la semana: {mejor[0]} ({mejor[1]} entradas)")
+    return "\n".join(lineas)
 
 
 # --- Pruebas (NO modificar) ---
